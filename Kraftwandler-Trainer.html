@@ -1,0 +1,414 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Kraftwandler-Trainer</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;800&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: Kopf mit Stations-Navigation, darunter je eine Station: Erklärung, interaktive Übung, Merksatz und Satzanfänge */
+:root{
+  --bg:#EEF2F5; --panel:#FBFCFD; --ink:#1D2B36; --muted:#55636F; --line:#C9D4DE;
+  --kraft:#C2560E; --last:#1F5F9E; --piv:#2E7D32; --wood:#C8935A; --stand:#9AA5B1; --soft:#DCE8F4; --rolle:#FBE3D2;
+  --ok:#2E7D32; --okbg:#E3F1E4; --bad:#A32D2D; --badbg:#FBE7E7; --tip:#FFF4D6; --tipline:#E0B84A; --fig:#FFFFFF;
+  --display:'Nunito',Verdana,sans-serif; --mono:'JetBrains Mono',ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#141B21; --panel:#1C252D; --ink:#E8EEF2; --muted:#A7B4BF; --line:#34424E;
+  --kraft:#F2A66B; --last:#8DBDEB; --piv:#7CC47F; --wood:#B98A5A; --stand:#6B7783; --soft:#22374A; --rolle:#5A3420;
+  --ok:#7CC47F; --okbg:#1E3321; --bad:#F09595; --badbg:#3A1F1F; --tip:#3A2F17; --tipline:#8A6A1E; --fig:#F4F6F8; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#141B21; --panel:#1C252D; --ink:#E8EEF2; --muted:#A7B4BF; --line:#34424E;
+  --kraft:#F2A66B; --last:#8DBDEB; --piv:#7CC47F; --wood:#B98A5A; --stand:#6B7783; --soft:#22374A; --rolle:#5A3420;
+  --ok:#7CC47F; --okbg:#1E3321; --bad:#F09595; --badbg:#3A1F1F; --tip:#3A2F17; --tipline:#8A6A1E; --fig:#F4F6F8; color-scheme:dark}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--display);font-size:17px;line-height:1.55}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--panel)}
+.wrap{max-width:1100px;margin:0 auto;padding-block:18px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:18px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--panel);border-bottom:1px solid var(--line)}
+header.top .in{max-width:1100px;margin:0 auto;padding-block:10px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.brand{font-weight:800;margin-right:8px}
+nav{display:flex;flex-wrap:wrap;gap:6px}
+nav a{font-weight:700;font-size:15px;text-decoration:none;color:var(--ink);border:1.5px solid var(--line);border-radius:999px;padding:4px 12px}
+nav a[aria-current="page"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+h1{font-size:32px;margin:0;font-weight:800;text-wrap:balance}
+h2{font-size:26px;margin:0;font-weight:800;text-wrap:balance}
+h3{font-size:19px;margin:0 0 6px;font-weight:800}
+p{margin:0}
+.eyebrow{font-size:13px;font-weight:800;letter-spacing:1.2px;text-transform:uppercase;color:var(--kraft)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0;display:flex;flex-direction:column;gap:12px}
+.grid2{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px}
+@media (max-width:820px){.grid2{grid-template-columns:1fr}}
+.fig{background:var(--fig);border-radius:12px;padding:8px}
+.fig svg{width:100%;height:auto;display:block}
+.merk{background:var(--tip);border:1px solid var(--tipline);border-radius:12px;padding:12px 16px}
+.satz{border:1.5px dashed var(--line);border-radius:12px;padding:10px 16px;font-size:15px}
+.satz ul{margin:4px 0 0;padding-left:20px}
+.b{font:inherit;font-weight:700;font-size:15px;border:1.5px solid var(--line);background:transparent;color:var(--ink);border-radius:10px;padding:7px 12px;cursor:pointer}
+.b:hover{border-color:var(--last)}
+.b.pri{border-color:var(--kraft);color:var(--kraft)}
+.b[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+.b:focus-visible,nav a:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--last);outline-offset:2px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+select,input[type=text]{font:inherit;font-size:16px;border:1.5px solid var(--line);border-radius:8px;padding:4px 8px;background:var(--panel);color:var(--ink)}
+input[type=text]{width:110px;font-family:var(--mono);text-align:center}
+.ok{border-color:var(--ok)!important;background:var(--okbg)!important}
+.bad{border-color:var(--bad)!important;background:var(--badbg)!important}
+.msg{font-weight:700;min-height:1.4em}
+.msg.ok{color:var(--ok);background:none!important} .msg.bad{color:var(--bad);background:none!important}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px}
+.card{border:1.5px solid var(--line);border-radius:12px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.card .name{font-weight:800;text-align:center}
+.check li{list-style:none;display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--line)}
+.check ul{padding:0;margin:0}
+.check input{width:20px;height:20px;margin-top:3px;accent-color:var(--ok)}
+.check a{color:var(--last);font-weight:700}
+.task{font-size:18px;font-weight:600}
+.steps{font-family:var(--mono);font-size:15px;background:var(--soft);border-radius:10px;padding:10px 14px;white-space:pre-wrap}
+.num{font-family:var(--mono);font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{width:100%;accent-color:var(--kraft)}
+.q{border-bottom:1px solid var(--line);padding:10px 0;display:flex;flex-direction:column;gap:6px}
+.q .opts{display:flex;flex-wrap:wrap;gap:6px}
+.score{font-size:22px;font-weight:800}
+.tablewrap{overflow-x:auto}
+table.cmp{border-collapse:collapse;width:100%;min-width:480px}
+table.cmp th,table.cmp td{border:1px solid var(--line);padding:6px 10px;text-align:left}
+table.cmp th{background:var(--ink);color:var(--panel)}
+</style>
+
+<style>
+.meter{display:flex;flex-wrap:wrap;align-items:center;gap:10px;background:var(--soft);border-radius:10px;padding:8px 12px;font-size:15px}
+.dots{display:flex;gap:6px}
+.dot{width:16px;height:16px;border-radius:50%;border:2px solid var(--last);background:transparent}
+.dot.on{background:var(--last)}
+.meter.done{background:var(--okbg)} .meter.done .dot{border-color:var(--ok)} .meter.done .dot.on{background:var(--ok)}
+.badge{font-weight:800;font-size:13px;border-radius:999px;padding:2px 10px;background:var(--okbg);color:var(--ok)}
+.pq{display:flex;flex-direction:column;gap:10px}
+.pq .q{font-size:18px;font-weight:600}
+.pq .fig{max-width:560px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opts .b{min-width:120px}
+.prog{list-style:none;padding:0;margin:0;display:flex;flex-direction:column}
+.prog li{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)}
+.prog a{color:var(--last);font-weight:800}
+.stat{font-size:14px;color:var(--muted)}
+</style>
+
+<header class="top"><div class="in">
+  <span class="brand">Kraftwandler-Trainer</span>
+  <nav id="nav">
+    <a href="#start">Start</a><a href="#station-1">1 Begriffe</a><a href="#station-2">2 Hebelarten</a><a href="#station-3">3 Hebelgesetz</a><a href="#station-4">4 Goldene Regel</a><a href="#station-5">5 Rollen</a><a href="#probe">Probetest</a>
+  </nav>
+</div></header>
+
+<main class="wrap">
+
+<section data-view="start" class="panel">
+  <span class="eyebrow">Vorbereitung auf die Lernkontrolle</span>
+  <h1>Hebel, Goldene Regel und Rollen</h1>
+  <p>Zu jedem Thema gibt es unendlich viele neue Aufgaben. Übe so lange, bis du <b>5 Aufgaben hintereinander richtig</b> gelöst hast. Dann ist das Thema sicher. Machst du einen Fehler, beginnt die Zählung von vorn. Lies dann den Rechenweg und versuche es noch einmal.</p>
+  <h3>Mein Fortschritt</h3>
+  <ul class="prog" id="prog"></ul>
+  <p class="msg" id="progmsg"></p>
+  <div class="row"><button class="b" id="resetAll">Fortschritt löschen</button><span class="stat" id="resetHint"></span></div>
+  <p class="stat">Dein Fortschritt bleibt nur in diesem Browser gespeichert.</p>
+</section>
+
+<section data-view="station-1" hidden style="display:flex;flex-direction:column;gap:18px">
+  <div class="grid2">
+    <div class="panel">
+      <span class="eyebrow">Station 1</span><h2>Die Teile eines Hebels</h2>
+      <p>Ein Hebel ist eine feste Stange, die sich um einen Punkt dreht. Diesen Punkt nennt man <b>Drehachse</b>. Du drückst mit der <b>Kraft</b>. Der Hebel hebt die <b>Last</b>.</p>
+      <p>Der <b>Kraftarm</b> ist der Abstand von der Drehachse bis zur Kraft. Der <b>Lastarm</b> ist der Abstand von der Drehachse bis zur Last.</p>
+      <div class="merk"><b>Merke:</b> Hebelarme misst man immer von der Drehachse aus.</div>
+      <div class="satz"><b>Satzanfänge</b><ul><li>Die Drehachse ist der Punkt, um den …</li><li>Der Kraftarm reicht von … bis …</li></ul></div>
+    </div>
+    <div class="panel"><h3>Beispiel: Wippe</h3><div class="fig" id="s1sol"></div></div>
+  </div>
+  <div class="panel"><h3>Üben: Begriffe</h3><div id="p-begriffe"></div></div>
+</section>
+
+<section data-view="station-2" hidden style="display:flex;flex-direction:column;gap:18px">
+  <div class="panel">
+    <span class="eyebrow">Station 2</span><h2>Einseitig oder zweiseitig?</h2>
+    <div class="grid2">
+      <p><b>Zweiseitiger Hebel:</b> Die Drehachse liegt zwischen Kraft und Last. Kraft und Last sind auf verschiedenen Seiten. Beispiel: Wippe.</p>
+      <p><b>Einseitiger Hebel:</b> Die Drehachse liegt am Ende. Kraft und Last sind auf derselben Seite. Beispiel: Schubkarre.</p>
+    </div>
+    <div class="merk"><b>Tipp:</b> Suche zuerst die Drehachse. Liegt sie in der Mitte zwischen Kraft und Last, ist der Hebel zweiseitig.</div>
+    <div class="satz"><b>Satzanfänge</b><ul><li>Die Schere ist ein … Hebel, weil die Drehachse …</li><li>Bei der Schubkarre liegen Kraft und Last …</li></ul></div>
+  </div>
+  <div class="panel"><h3>Üben: Hebelarten</h3><div id="p-hebelarten"></div></div>
+</section>
+
+<section data-view="station-3" hidden style="display:flex;flex-direction:column;gap:18px">
+  <div class="panel">
+    <span class="eyebrow">Station 3</span><h2>Das Hebelgesetz</h2>
+    <div class="merk"><b>Hebelgesetz:</b> Ein Hebel ist im Gleichgewicht, wenn gilt:<br><b>Kraft · Kraftarm = Last · Lastarm</b> &nbsp; (F₁ · a₁ = F₂ · a₂)</div>
+    <p>Umrechnen: 10 g ≙ 0,1 N · 50 g ≙ 0,5 N · 100 g ≙ 1 N</p>
+  </div>
+  <div class="panel">
+    <h3>Hebel-Labor: Probiere frei aus</h3>
+    <div class="fig"><svg id="lever" viewBox="0 0 680 280" role="img" aria-label="Zweiseitiger Hebel mit Gewichten"></svg></div>
+    <div class="grid2">
+      <div style="display:flex;flex-direction:column;gap:6px"><b style="color:var(--last)">Links</b>
+        <label>Gewicht: <select id="lw"></select></label>
+        <label>Abstand: <span class="num" id="lav"></span><input type="range" id="la" min="2" max="20" step="2" value="4"></label></div>
+      <div style="display:flex;flex-direction:column;gap:6px"><b style="color:var(--kraft)">Rechts</b>
+        <label>Gewicht: <select id="rw"></select></label>
+        <label>Abstand: <span class="num" id="rav"></span><input type="range" id="ra" min="2" max="20" step="2" value="8"></label></div>
+    </div>
+    <div class="steps" id="leverTxt" aria-live="polite"></div>
+  </div>
+  <div class="panel"><h3>Üben: Ist der Hebel im Gleichgewicht?</h3><div id="p-gleichgewicht"></div>
+    <div class="satz"><b>Satzanfänge</b><ul><li>Links ist das Produkt …, rechts ist es … .</li><li>Die Seite mit dem größeren Produkt …</li></ul></div></div>
+  <div class="panel"><h3>Üben: Mit dem Hebelgesetz rechnen</h3><div id="p-hebelrechnen"></div>
+    <p class="stat">Schreibe im Heft immer: Gegeben · Gesucht · Rechnung · Antwortsatz.</p></div>
+</section>
+
+<section data-view="station-4" hidden style="display:flex;flex-direction:column;gap:18px">
+  <div class="grid2">
+    <div class="panel">
+      <span class="eyebrow">Station 4</span><h2>Die Goldene Regel</h2>
+      <div class="merk"><b>Goldene Regel der Mechanik:</b> Was man an Kraft spart, muss man an Weg zusetzen.</div>
+      <p>Ist der Kraftarm 3-mal so lang wie der Lastarm, brauchst du nur ein Drittel der Kraft. Dafür musst du 3-mal so weit drücken, wie die Last steigt.</p>
+      <div class="satz"><b>Satzanfänge</b><ul><li>Ich spare Kraft, aber ich muss dafür …</li><li>Der Kraftweg ist … so lang wie der Lastweg, weil …</li></ul></div>
+    </div>
+    <div class="panel">
+      <h3>Ausprobieren</h3>
+      <label>Kraftarm : Lastarm = <span class="num" id="grv"></span> : 1<input type="range" id="gr" min="1" max="6" step="1" value="3"></label>
+      <div class="steps" id="grTxt"></div>
+    </div>
+  </div>
+  <div class="panel"><h3>Üben: Goldene Regel</h3><div id="p-goldene"></div></div>
+</section>
+
+<section data-view="station-5" hidden style="display:flex;flex-direction:column;gap:18px">
+  <div class="panel">
+    <span class="eyebrow">Station 5</span><h2>Feste und lose Rolle</h2>
+    <div class="grid2">
+      <div class="fig"><svg viewBox="0 0 520 260" role="img" aria-label="Links eine feste Rolle, rechts eine lose Rolle" id="rollen"></svg></div>
+      <div class="tablewrap"><table class="cmp"><tr><th></th><th>Feste Rolle</th><th>Lose Rolle</th></tr>
+        <tr><td><b>Rolle</b></td><td>oben befestigt</td><td>hängt im Seil, bewegt sich mit</td></tr>
+        <tr><td><b>Zugkraft</b></td><td>= Last</td><td>= (Last + Rolle) : 2</td></tr>
+        <tr><td><b>Kraftweg</b></td><td>= Lastweg</td><td>= 2 · Lastweg</td></tr>
+        <tr><td><b>Wozu?</b></td><td>Richtung ändern</td><td>Kraft sparen</td></tr></table></div>
+    </div>
+    <div class="merk"><b>Warum halbe Kraft?</b> Die lose Rolle hängt an zwei Seilstücken. Jedes trägt die Hälfte.</div>
+    <div class="satz"><b>Satzanfänge</b><ul><li>Die feste Rolle ändert nur …</li><li>Bei der losen Rolle hängt die Last an … Seilstücken, deshalb …</li></ul></div>
+  </div>
+  <div class="panel"><h3>Üben: Rollen</h3><div id="p-rollen"></div></div>
+</section>
+
+<section data-view="probe" hidden class="panel">
+  <span class="eyebrow">Probetest</span><h2>Bist du bereit?</h2>
+  <p>12 zufällige Aufgaben aus allen Themen, wie in der Lernkontrolle. Jeder Probetest ist anders. Du kannst ihn so oft machen, wie du willst.</p>
+  <div id="probe"></div>
+</section>
+
+</main>
+
+<script>
+const SVG={"tasks": {"Wippe": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Wippe'><rect width='400' height='250' fill='white'/><line x1='20' y1='182' x2='380' y2='182' stroke='#7A8794' stroke-width='3'/><polygon points='200,134 180,182 220,182' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/><rect x='40' y='126' width='320' height='8' rx='3' fill='#C8935A' stroke='#1D2B36' stroke-width='2'/><circle cx='80' cy='90' r='11' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='70' y='102' width='20' height='24' rx='5' fill='#E8A33D' stroke='#1D2B36' stroke-width='2'/><circle cx='300' cy='78' r='14' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='286' y='93' width='28' height='33' rx='6' fill='#5B7FA6' stroke='#1D2B36' stroke-width='2'/><text x='80' y='66' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Kind</text><text x='300' y='54' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Person drückt</text><line x1='200' y1='206' x2='300' y2='206' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='200' y1='130' x2='200' y2='206' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='200' x2='200' y2='212' stroke='#7A8794' stroke-width='2.5'/><line x1='300' y1='134' x2='300' y2='206' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='300' y1='200' x2='300' y2='212' stroke='#7A8794' stroke-width='2.5'/><line x1='200' y1='206' x2='80' y2='206' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='200' y1='130' x2='200' y2='206' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='200' x2='200' y2='212' stroke='#7A8794' stroke-width='2.5'/><line x1='80' y1='134' x2='80' y2='206' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='80' y1='200' x2='80' y2='212' stroke='#7A8794' stroke-width='2.5'/><line x1='300' y1='134' x2='300' y2='162' stroke='#1D2B36' stroke-width='5'/><polygon points='300,174 293,162 307,162' fill='#1D2B36'/><line x1='80' y1='134' x2='80' y2='162' stroke='#1D2B36' stroke-width='5'/><polygon points='80,174 73,162 87,162' fill='#1D2B36'/><circle cx='200' cy='130' r='8' fill='#1D2B36' stroke='white' stroke-width='2.5'/><circle cx='200' cy='109' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='200' y='114.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>C</text><circle cx='323' cy='161' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='323' y='166.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>A</text><circle cx='103' cy='161' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='103' y='166.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>E</text><circle cx='250' cy='223' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='250' y='228.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>B</text><circle cx='140' cy='223' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='140' y='228.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>D</text></svg>", "Schere": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Schere'><rect width='400' height='250' fill='white'/><line x1='200' y1='120' x2='360' y2='100' stroke='#1D2B36' stroke-width='6' stroke-linecap='round'/><line x1='200' y1='120' x2='360' y2='140' stroke='#1D2B36' stroke-width='6' stroke-linecap='round'/><line x1='200' y1='120' x2='95' y2='92' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><line x1='200' y1='120' x2='95' y2='148' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><ellipse cx='72' cy='86' rx='24' ry='15' fill='none' stroke='#E8A33D' stroke-width='7'/><ellipse cx='72' cy='154' rx='24' ry='15' fill='none' stroke='#E8A33D' stroke-width='7'/><rect x='262' y='84' width='14' height='72' fill='#E6D3A3' stroke='#1D2B36' stroke-width='1.5'/><text x='269' y='176' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Pappe</text><circle cx='200' cy='120' r='6' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/><line x1='200' y1='46' x2='100' y2='46' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='200' y1='120' x2='200' y2='46' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='40' x2='200' y2='52' stroke='#7A8794' stroke-width='2.5'/><line x1='100' y1='96' x2='100' y2='46' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='100' y1='40' x2='100' y2='52' stroke='#7A8794' stroke-width='2.5'/><line x1='200' y1='46' x2='269' y2='46' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='200' y1='120' x2='200' y2='46' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='40' x2='200' y2='52' stroke='#7A8794' stroke-width='2.5'/><line x1='269' y1='110' x2='269' y2='46' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='269' y1='40' x2='269' y2='52' stroke='#7A8794' stroke-width='2.5'/><line x1='100' y1='96' x2='100' y2='124' stroke='#1D2B36' stroke-width='5'/><polygon points='100,136 93,124 107,124' fill='#1D2B36'/><line x1='269' y1='110' x2='269' y2='82' stroke='#1D2B36' stroke-width='5'/><polygon points='269,70 262,82 276,82' fill='#1D2B36'/><circle cx='200' cy='120' r='8' fill='#1D2B36' stroke='white' stroke-width='2.5'/><circle cx='200' cy='151' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='200' y='156.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>B</text><circle cx='79' cy='121' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='79' y='126.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>D</text><circle cx='293' cy='75' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='293' y='80.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>A</text><circle cx='150' cy='31' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='150' y='36.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>E</text><circle cx='234' cy='31' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='234' y='36.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>C</text></svg>", "Schubkarre": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Schubkarre'><rect width='400' height='250' fill='white'/><line x1='20' y1='200' x2='380' y2='200' stroke='#7A8794' stroke-width='3'/><circle cx='70' cy='174' r='26' fill='white' stroke='#1D2B36' stroke-width='4'/><line x1='70' y1='174' x2='360' y2='118' stroke='#1D2B36' stroke-width='6' stroke-linecap='round'/><path d='M112,160 L102,112 L220,92 L226,140 Z' fill='#B7C4CF' stroke='#1D2B36' stroke-width='2'/><path d='M106,110 Q160,80 216,94 L218,104 L108,122 Z' fill='#C8A06A' stroke='#1D2B36' stroke-width='1.5'/><text x='160' y='82' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Sand</text><circle cx='70' cy='174' r='5' fill='#1D2B36'/><line x1='70' y1='240' x2='352' y2='240' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='70' y1='174' x2='70' y2='240' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='70' y1='234' x2='70' y2='246' stroke='#7A8794' stroke-width='2.5'/><line x1='352' y1='120' x2='352' y2='240' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='352' y1='234' x2='352' y2='246' stroke='#7A8794' stroke-width='2.5'/><line x1='70' y1='218' x2='165' y2='218' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='70' y1='174' x2='70' y2='218' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='70' y1='212' x2='70' y2='224' stroke='#7A8794' stroke-width='2.5'/><line x1='165' y1='156' x2='165' y2='218' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='165' y1='212' x2='165' y2='224' stroke='#7A8794' stroke-width='2.5'/><line x1='352' y1='120' x2='352' y2='92' stroke='#1D2B36' stroke-width='5'/><polygon points='352,80 345,92 359,92' fill='#1D2B36'/><line x1='165' y1='156' x2='165' y2='184' stroke='#1D2B36' stroke-width='5'/><polygon points='165,196 158,184 172,184' fill='#1D2B36'/><circle cx='70' cy='174' r='8' fill='#1D2B36' stroke='white' stroke-width='2.5'/><circle cx='70' cy='135' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='70' y='140.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>A</text><circle cx='327' cy='87' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='327' y='92.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>C</text><circle cx='187' cy='185' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='187' y='190.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>D</text><circle cx='260' cy='231' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='260' y='236.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>E</text><circle cx='117' cy='209' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='117' y='214.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>B</text></svg>", "Flaschenöffner": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Flaschenöffner'><rect width='400' height='250' fill='white'/><rect x='62' y='150' width='56' height='100' fill='#3F7A52' stroke='#1D2B36' stroke-width='2'/><rect x='54' y='132' width='72' height='14' rx='2' fill='#D9B44A' stroke='#1D2B36' stroke-width='2'/><text x='8' y='172' fill='#1D2B36' font-size='12' font-weight='normal' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Deckel</text><path d='M58,130 L120,123 Q132,124 128,140 L120,142 L122,130 L340,104' fill='none' stroke='#1D2B36' stroke-width='7' stroke-linejoin='round' stroke-linecap='round'/><text x='232' y='200' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Flasche</text><line x1='58' y1='22' x2='330' y2='22' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='58' y1='130' x2='58' y2='22' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='58' y1='16' x2='58' y2='28' stroke='#7A8794' stroke-width='2.5'/><line x1='330' y1='105' x2='330' y2='22' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='330' y1='16' x2='330' y2='28' stroke='#7A8794' stroke-width='2.5'/><line x1='58' y1='44' x2='124' y2='44' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='58' y1='130' x2='58' y2='44' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='58' y1='38' x2='58' y2='50' stroke='#7A8794' stroke-width='2.5'/><line x1='124' y1='141' x2='124' y2='44' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='124' y1='38' x2='124' y2='50' stroke='#7A8794' stroke-width='2.5'/><line x1='330' y1='105' x2='330' y2='77' stroke='#1D2B36' stroke-width='5'/><polygon points='330,65 323,77 337,77' fill='#1D2B36'/><line x1='124' y1='141' x2='124' y2='169' stroke='#1D2B36' stroke-width='5'/><polygon points='124,181 117,169 131,169' fill='#1D2B36'/><circle cx='58' cy='130' r='8' fill='#1D2B36' stroke='white' stroke-width='2.5'/><circle cx='58' cy='105' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='58' y='110.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>D</text><circle cx='353' cy='77' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='353' y='82.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>B</text><circle cx='147' cy='171' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='147' y='176.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>E</text><circle cx='194' cy='10' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='194' y='15.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>A</text><circle cx='91' cy='57' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='91' y='62.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>C</text></svg>", "Nussknacker": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Nussknacker'><rect width='400' height='250' fill='white'/><line x1='60' y1='120' x2='350' y2='92' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><line x1='60' y1='120' x2='350' y2='148' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><circle cx='130' cy='120' r='14' fill='#A0522D' stroke='#1D2B36' stroke-width='2'/><text x='130' y='162' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Nuss</text><circle cx='60' cy='120' r='8' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/><line x1='60' y1='22' x2='335' y2='22' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='60' y1='120' x2='60' y2='22' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='60' y1='16' x2='60' y2='28' stroke='#7A8794' stroke-width='2.5'/><line x1='335' y1='94' x2='335' y2='22' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='335' y1='16' x2='335' y2='28' stroke='#7A8794' stroke-width='2.5'/><line x1='60' y1='44' x2='130' y2='44' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='60' y1='120' x2='60' y2='44' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='60' y1='38' x2='60' y2='50' stroke='#7A8794' stroke-width='2.5'/><line x1='130' y1='106' x2='130' y2='44' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='130' y1='38' x2='130' y2='50' stroke='#7A8794' stroke-width='2.5'/><line x1='335' y1='94' x2='335' y2='122' stroke='#1D2B36' stroke-width='5'/><polygon points='335,134 328,122 342,122' fill='#1D2B36'/><line x1='130' y1='106' x2='130' y2='78' stroke='#1D2B36' stroke-width='5'/><polygon points='130,66 123,78 137,78' fill='#1D2B36'/><circle cx='60' cy='120' r='8' fill='#1D2B36' stroke='white' stroke-width='2.5'/><circle cx='56' cy='153' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='56' y='158.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>E</text><circle cx='359' cy='81' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='359' y='86.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>A</text><circle cx='153' cy='69' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='153' y='74.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>C</text><circle cx='197' cy='10' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='197' y='15.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>D</text><circle cx='95' cy='57' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='95' y='62.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>B</text></svg>", "Brechstange": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Brechstange'><rect width='400' height='250' fill='white'/><line x1='20' y1='196' x2='380' y2='196' stroke='#7A8794' stroke-width='3'/><path d='M300,196 L300,150 Q330,128 372,146 L372,196 Z' fill='#B5B5B5' stroke='#1D2B36' stroke-width='2'/><text x='345' y='186' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Stein</text><path d='M246,196 L252,168 L272,168 L278,196 Z' fill='#8D8D8D' stroke='#1D2B36' stroke-width='2'/><line x1='40' y1='92' x2='318' y2='176' stroke='#1D2B36' stroke-width='8' stroke-linecap='round'/><line x1='262' y1='50' x2='55' y2='50' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='262' y1='159' x2='262' y2='50' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='262' y1='44' x2='262' y2='56' stroke='#7A8794' stroke-width='2.5'/><line x1='55' y1='97' x2='55' y2='50' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='55' y1='44' x2='55' y2='56' stroke='#7A8794' stroke-width='2.5'/><line x1='262' y1='50' x2='312' y2='50' stroke='#7A8794' stroke-width='3' stroke-dasharray='7 5'/><line x1='262' y1='159' x2='262' y2='50' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='262' y1='44' x2='262' y2='56' stroke='#7A8794' stroke-width='2.5'/><line x1='312' y1='174' x2='312' y2='50' stroke='#7A8794' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='312' y1='44' x2='312' y2='56' stroke='#7A8794' stroke-width='2.5'/><line x1='55' y1='97' x2='55' y2='125' stroke='#1D2B36' stroke-width='5'/><polygon points='55,137 48,125 62,125' fill='#1D2B36'/><line x1='312' y1='174' x2='312' y2='202' stroke='#1D2B36' stroke-width='5'/><polygon points='312,214 305,202 319,202' fill='#1D2B36'/><circle cx='262' cy='159' r='8' fill='#1D2B36' stroke='white' stroke-width='2.5'/><circle cx='255' cy='223' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='255' y='228.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>A</text><circle cx='76' cy='145' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='76' y='150.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>E</text><circle cx='335' cy='227' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='335' y='232.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>B</text><circle cx='158' cy='35' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='158' y='40.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>C</text><circle cx='287' cy='35' r='13' fill='#FFF4D6' stroke='#1D2B36' stroke-width='2'/><text x='287' y='40.5' fill='#1D2B36' font-size='15' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>D</text></svg>"}, "letters": {"Wippe": {"piv": "C", "K": "A", "L": "E", "aK": "B", "aL": "D"}, "Schere": {"piv": "B", "K": "D", "L": "A", "aK": "E", "aL": "C"}, "Schubkarre": {"piv": "A", "K": "C", "L": "D", "aK": "E", "aL": "B"}, "Flaschenöffner": {"piv": "D", "K": "B", "L": "E", "aK": "A", "aL": "C"}, "Nussknacker": {"piv": "E", "K": "A", "L": "C", "aK": "D", "aL": "B"}, "Brechstange": {"piv": "A", "K": "E", "L": "B", "aK": "C", "aL": "D"}}, "sk": {"Wippe": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Wippe'><rect width='400' height='250' fill='white'/><line x1='20' y1='182' x2='380' y2='182' stroke='#7A8794' stroke-width='3'/><polygon points='200,134 180,182 220,182' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/><rect x='40' y='126' width='320' height='8' rx='3' fill='#C8935A' stroke='#1D2B36' stroke-width='2'/><circle cx='80' cy='90' r='11' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='70' y='102' width='20' height='24' rx='5' fill='#E8A33D' stroke='#1D2B36' stroke-width='2'/><circle cx='300' cy='78' r='14' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='286' y='93' width='28' height='33' rx='6' fill='#5B7FA6' stroke='#1D2B36' stroke-width='2'/><text x='80' y='66' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Kind</text><text x='300' y='54' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Person drückt</text></svg>", "typ": "zweiseitig"}, "Schere": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Schere'><rect width='400' height='250' fill='white'/><line x1='200' y1='120' x2='360' y2='100' stroke='#1D2B36' stroke-width='6' stroke-linecap='round'/><line x1='200' y1='120' x2='360' y2='140' stroke='#1D2B36' stroke-width='6' stroke-linecap='round'/><line x1='200' y1='120' x2='95' y2='92' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><line x1='200' y1='120' x2='95' y2='148' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><ellipse cx='72' cy='86' rx='24' ry='15' fill='none' stroke='#E8A33D' stroke-width='7'/><ellipse cx='72' cy='154' rx='24' ry='15' fill='none' stroke='#E8A33D' stroke-width='7'/><rect x='262' y='84' width='14' height='72' fill='#E6D3A3' stroke='#1D2B36' stroke-width='1.5'/><text x='269' y='176' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Pappe</text><circle cx='200' cy='120' r='6' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "zweiseitig"}, "Zange": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Zange'><rect width='400' height='250' fill='white'/><line x1='230' y1='120' x2='300' y2='112' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><line x1='230' y1='120' x2='300' y2='128' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><line x1='230' y1='120' x2='55' y2='96' stroke='#E8A33D' stroke-width='12' stroke-linecap='round'/><line x1='230' y1='120' x2='55' y2='144' stroke='#E8A33D' stroke-width='12' stroke-linecap='round'/><circle cx='282' cy='120' r='5' fill='#B87333' stroke='#1D2B36' stroke-width='1.5'/><text x='282' y='152' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Draht</text><circle cx='230' cy='120' r='7' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "zweiseitig"}, "Brechstange": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Brechstange'><rect width='400' height='250' fill='white'/><line x1='20' y1='196' x2='380' y2='196' stroke='#7A8794' stroke-width='3'/><path d='M300,196 L300,150 Q330,128 372,146 L372,196 Z' fill='#B5B5B5' stroke='#1D2B36' stroke-width='2'/><text x='345' y='186' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Stein</text><path d='M246,196 L252,168 L272,168 L278,196 Z' fill='#8D8D8D' stroke='#1D2B36' stroke-width='2'/><line x1='40' y1='92' x2='318' y2='176' stroke='#1D2B36' stroke-width='8' stroke-linecap='round'/></svg>", "typ": "zweiseitig"}, "Schubkarre": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Schubkarre'><rect width='400' height='250' fill='white'/><line x1='20' y1='200' x2='380' y2='200' stroke='#7A8794' stroke-width='3'/><circle cx='70' cy='174' r='26' fill='white' stroke='#1D2B36' stroke-width='4'/><line x1='70' y1='174' x2='360' y2='118' stroke='#1D2B36' stroke-width='6' stroke-linecap='round'/><path d='M112,160 L102,112 L220,92 L226,140 Z' fill='#B7C4CF' stroke='#1D2B36' stroke-width='2'/><path d='M106,110 Q160,80 216,94 L218,104 L108,122 Z' fill='#C8A06A' stroke='#1D2B36' stroke-width='1.5'/><text x='160' y='82' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Sand</text><circle cx='70' cy='174' r='5' fill='#1D2B36'/></svg>", "typ": "einseitig"}, "Flaschenöffner": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Flaschenöffner'><rect width='400' height='250' fill='white'/><rect x='62' y='150' width='56' height='100' fill='#3F7A52' stroke='#1D2B36' stroke-width='2'/><rect x='54' y='132' width='72' height='14' rx='2' fill='#D9B44A' stroke='#1D2B36' stroke-width='2'/><text x='8' y='172' fill='#1D2B36' font-size='12' font-weight='normal' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Deckel</text><path d='M58,130 L120,123 Q132,124 128,140 L120,142 L122,130 L340,104' fill='none' stroke='#1D2B36' stroke-width='7' stroke-linejoin='round' stroke-linecap='round'/><text x='232' y='200' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Flasche</text></svg>", "typ": "einseitig"}, "Nussknacker": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Nussknacker'><rect width='400' height='250' fill='white'/><line x1='60' y1='120' x2='350' y2='92' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><line x1='60' y1='120' x2='350' y2='148' stroke='#1D2B36' stroke-width='9' stroke-linecap='round'/><circle cx='130' cy='120' r='14' fill='#A0522D' stroke='#1D2B36' stroke-width='2'/><text x='130' y='162' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Nuss</text><circle cx='60' cy='120' r='8' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "einseitig"}, "Pinzette": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Pinzette'><rect width='400' height='250' fill='white'/><line x1='50' y1='120' x2='340' y2='110' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><line x1='50' y1='120' x2='340' y2='130' stroke='#1D2B36' stroke-width='7' stroke-linecap='round'/><rect x='190' y='100' width='50' height='40' rx='14' fill='#F4C27A' opacity='.55'/><text x='232' y='168' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Finger</text><circle cx='343' cy='120' r='6' fill='#6B3FA8'/><text x='350' y='150' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Splitter</text><circle cx='50' cy='120' r='7' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "einseitig"}, "Unterarm": {"svg": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Unterarm'><rect width='400' height='250' fill='white'/><path d='M70,30 L110,30 L112,150 L70,150 Z' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><text x='62' y='70' fill='#1D2B36' font-size='12' font-weight='normal' text-anchor='end' font-family='DejaVu Sans, Arial, sans-serif'>Oberarm</text><path d='M90,140 L330,140 L330,165 L90,165 Z' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><text x='240' y='186' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Unterarm</text><path d='M112,48 Q150,90 132,142' fill='none' stroke='#C0392B' stroke-width='9' stroke-linecap='round'/><text x='158' y='66' fill='#1D2B36' font-size='12' font-weight='normal' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Muskel</text><circle cx='342' cy='122' r='18' fill='#4A6FA5' stroke='#1D2B36' stroke-width='2'/><text x='342' y='96' fill='#1D2B36' font-size='12' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Ball</text><circle cx='92' cy='152' r='7' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/></svg>", "typ": "einseitig"}}, "wippeSol": "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 250' role='img' aria-label='Wippe'><rect width='400' height='250' fill='white'/><line x1='20' y1='182' x2='380' y2='182' stroke='#7A8794' stroke-width='3'/><polygon points='200,134 180,182 220,182' fill='#9AA5B1' stroke='#1D2B36' stroke-width='2'/><rect x='40' y='126' width='320' height='8' rx='3' fill='#C8935A' stroke='#1D2B36' stroke-width='2'/><circle cx='80' cy='90' r='11' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='70' y='102' width='20' height='24' rx='5' fill='#E8A33D' stroke='#1D2B36' stroke-width='2'/><circle cx='300' cy='78' r='14' fill='#F4C27A' stroke='#1D2B36' stroke-width='2'/><rect x='286' y='93' width='28' height='33' rx='6' fill='#5B7FA6' stroke='#1D2B36' stroke-width='2'/><text x='80' y='66' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Kind</text><text x='300' y='54' fill='#1D2B36' font-size='13' font-weight='normal' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Person drückt</text><line x1='200' y1='206' x2='300' y2='206' stroke='#C2560E' stroke-width='3'/><line x1='200' y1='130' x2='200' y2='206' stroke='#C2560E' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='200' x2='200' y2='212' stroke='#C2560E' stroke-width='2.5'/><line x1='300' y1='134' x2='300' y2='206' stroke='#C2560E' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='300' y1='200' x2='300' y2='212' stroke='#C2560E' stroke-width='2.5'/><line x1='200' y1='206' x2='80' y2='206' stroke='#1F5F9E' stroke-width='3'/><line x1='200' y1='130' x2='200' y2='206' stroke='#1F5F9E' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='200' y1='200' x2='200' y2='212' stroke='#1F5F9E' stroke-width='2.5'/><line x1='80' y1='134' x2='80' y2='206' stroke='#1F5F9E' stroke-width='1.4' stroke-dasharray='3 3'/><line x1='80' y1='200' x2='80' y2='212' stroke='#1F5F9E' stroke-width='2.5'/><line x1='300' y1='134' x2='300' y2='162' stroke='#C2560E' stroke-width='5'/><polygon points='300,174 293,162 307,162' fill='#C2560E'/><line x1='80' y1='134' x2='80' y2='162' stroke='#1F5F9E' stroke-width='5'/><polygon points='80,174 73,162 87,162' fill='#1F5F9E'/><circle cx='200' cy='130' r='8' fill='#2E7D32' stroke='white' stroke-width='2.5'/><text x='200' y='114' fill='#2E7D32' font-size='14' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Drehachse</text><text x='310' y='166' fill='#C2560E' font-size='14' font-weight='bold' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Kraft</text><text x='90' y='166' fill='#1F5F9E' font-size='14' font-weight='bold' text-anchor='start' font-family='DejaVu Sans, Arial, sans-serif'>Last</text><text x='250' y='228' fill='#C2560E' font-size='14' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Kraftarm</text><text x='140' y='228' fill='#1F5F9E' font-size='14' font-weight='bold' text-anchor='middle' font-family='DejaVu Sans, Arial, sans-serif'>Lastarm</text></svg>"};
+const $=id=>document.getElementById(id);
+const fmt=(x,d=2)=>{let s=(Math.round(x*100)/100).toFixed(d);if(d>0)s=s.replace(/\.?0+$/,'');return s.replace('.',',')};
+const parse=v=>{const t=String(v||'').trim().replace(',','.');return t===''?NaN:Number(t)};
+const rnd=a=>a[Math.floor(Math.random()*a.length)];
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const store={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const NEED=5;
+
+/* ---------- Zeichnungen ---------- */
+function levSVG(lw,la,rw,ra,ang,held,q){
+  const C={ink:'#1D2B36',wood:'#C8935A',last:'#1F5F9E',kraft:'#C2560E',piv:'#2E7D32',st:'#9AA5B1'};
+  const cx=340,cy=110,k=15,rad=ang*Math.PI/180;
+  const pt=x=>[cx+x*k*Math.cos(rad),cy+x*k*Math.sin(rad)];
+  let g=`<rect x="0" y="0" width="680" height="280" fill="#FFFFFF"/><rect x="334" y="${cy}" width="12" height="148" fill="${C.st}"/><rect x="290" y="256" width="100" height="10" fill="${C.st}"/>`;
+  g+=`<g transform="rotate(${ang} ${cx} ${cy})"><rect x="${cx-305}" y="${cy-6}" width="610" height="12" rx="4" fill="${C.wood}" stroke="${C.ink}"/>`;
+  for(let i=-20;i<=20;i+=2)g+=`<circle cx="${cx+i*k}" cy="${cy}" r="2.6" fill="#633806"/>`;
+  for(let i=-20;i<=20;i+=4)if(i)g+=`<text x="${cx+i*k}" y="${cy-12}" text-anchor="middle" font-size="11" fill="#55636F" font-family="JetBrains Mono,monospace">${Math.abs(i)}</text>`;
+  g+=`</g><circle cx="${cx}" cy="${cy}" r="8" fill="${C.piv}" stroke="#fff" stroke-width="2"/>`;
+  const lab=w=>q&&q.grams?Math.round(w*100)+' g':fmt(w,1)+' N';
+  const hang=(x,w,col,text)=>{const [px,py]=pt(x),h=w==null?40:14+w*40;return `<line x1="${px}" y1="${py}" x2="${px}" y2="${py+22}" stroke="${C.ink}" stroke-width="2"/><rect x="${px-14}" y="${py+22}" width="28" height="${h}" rx="3" fill="${w==null?'#9AA5B1':col}"/><text x="${px}" y="${py+22+h+18}" text-anchor="middle" font-size="14" font-weight="800" fill="${col}" font-family="Nunito,sans-serif">${text}</text>`};
+  g+=hang(-la,lw,C.last,lab(lw));
+  if(ra)g+=hang(ra,rw,C.kraft,rw==null?'?':lab(rw));
+  else if(q&&q.rwOnly)g+=`<text x="${cx+150}" y="${cy+70}" text-anchor="middle" font-size="15" font-weight="800" fill="${C.kraft}" font-family="Nunito,sans-serif">rechts: ${lab(rw)} – wohin?</text>`;
+  if(held)g+=`<text x="${cx}" y="276" text-anchor="middle" font-size="13" fill="#55636F" font-family="Nunito,sans-serif">Der Hebel wird noch festgehalten.</text>`;
+  return `<svg viewBox="0 0 680 280" role="img" aria-label="Hebel">${g}</svg>`}
+function rolleSVG(type,show){
+  const ink='#1D2B36',rope='#8A5A2B',st='#9AA5B1';
+  const pul=(x,y,f)=>`<circle cx="${x}" cy="${y}" r="24" fill="${f}" stroke="${ink}" stroke-width="2"/><circle cx="${x}" cy="${y}" r="9" fill="#fff" stroke="#7A8794"/><circle cx="${x}" cy="${y}" r="3" fill="${ink}"/>`;
+  const box=(x,y)=>`<rect x="${x-20}" y="${y}" width="40" height="34" rx="3" fill="#1F5F9E"/><text x="${x}" y="${y+22}" text-anchor="middle" font-size="12" fill="#fff" font-weight="800" font-family="Nunito,sans-serif">Last</text>`;
+  const arr=(x,y1,y2)=>{const d=y2>y1?1:-1;return `<line x1="${x}" y1="${y1}" x2="${x}" y2="${y2-d*8}" stroke="#C2560E" stroke-width="4"/><polygon points="${x-8},${y2-d*10} ${x+8},${y2-d*10} ${x},${y2+d*3}" fill="#C2560E"/>`};
+  let g='';
+  if(type==='fest'){g+=`<rect x="20" y="20" width="200" height="8" fill="${st}"/><line x1="120" y1="28" x2="120" y2="60" stroke="${ink}" stroke-width="3"/><line x1="96" y1="60" x2="96" y2="160" stroke="${rope}" stroke-width="3"/><line x1="144" y1="60" x2="144" y2="200" stroke="${rope}" stroke-width="3"/>`+pul(120,60,'#DCE8F4')+box(96,160)+arr(144,190,240);
+    if(show)g+=`<text x="120" y="254" text-anchor="middle" font-size="15" font-weight="800" fill="${ink}" font-family="Nunito,sans-serif">feste Rolle</text>`}
+  else{g+=`<rect x="20" y="20" width="200" height="8" fill="${st}"/><circle cx="96" cy="28" r="4" fill="${ink}"/><line x1="96" y1="28" x2="96" y2="150" stroke="${rope}" stroke-width="3"/><line x1="144" y1="150" x2="144" y2="50" stroke="${rope}" stroke-width="3"/><path d="M96 150 A24 24 0 0 0 144 150" fill="none" stroke="${rope}" stroke-width="3"/>`+pul(120,150,'#FBE3D2')+`<line x1="120" y1="150" x2="120" y2="185" stroke="${ink}" stroke-width="3"/>`+box(120,185)+arr(144,80,35);
+    if(show)g+=`<text x="120" y="254" text-anchor="middle" font-size="15" font-weight="800" fill="${ink}" font-family="Nunito,sans-serif">lose Rolle</text>`}
+  return g}
+
+/* ---------- Generatoren ---------- */
+const TERMS={piv:'Drehachse',K:'Kraft',L:'Last',aK:'Kraftarm',aL:'Lastarm'};
+const TERMLIST=['Drehachse','Kraft','Last','Kraftarm','Lastarm'];
+const DEF={Drehachse:'Die Drehachse ist der Punkt, um den sich der Hebel dreht.',Kraft:'Die Kraft ist da, wo du drückst oder ziehst.',Last:'Die Last ist das, was gehoben werden soll.',Kraftarm:'Der Kraftarm reicht von der Drehachse bis zur Kraft.',Lastarm:'Der Lastarm reicht von der Drehachse bis zur Last.'};
+const mcq=(q,opts,ans,steps,fig)=>{const sh=shuffle(opts.map((o,i)=>({o,i})));return {type:'mcq',q,fig,opts:sh.map(x=>x.o),ans:sh.findIndex(x=>x.i===ans),steps}};
+const num=(q,fields,steps,fig)=>({type:'num',q,fields,steps,fig});
+
+const GEN={
+ begriffe(){
+  if(Math.random()<0.7){const name=rnd(Object.keys(SVG.tasks)),L=SVG.letters[name],key=rnd(Object.keys(L)),letter=L[key],term=TERMS[key];
+    return mcq(`${name}: Was zeigt der Buchstabe ${letter}?`,TERMLIST,TERMLIST.indexOf(term),`${letter} ist ${term==='Last'||term==='Kraft'||term==='Drehachse'?'die':'der'} ${term}. ${DEF[term]}`,`<div class="fig">${SVG.tasks[name]}</div>`)}
+  const P=[['Der Punkt, um den sich der Hebel dreht, heißt …',['Drehachse','Kraftarm','Last'],0],
+   ['Der Abstand von der Drehachse bis zur Kraft heißt …',['Lastarm','Kraftarm','Drehachse'],1],
+   ['Der Abstand von der Drehachse bis zur Last heißt …',['Lastarm','Kraftarm','Kraft'],0],
+   ['Hebelarme misst man immer von … aus.',['der Drehachse','der Kraft','der Last'],0],
+   ['Das, was der Hebel hochheben soll, heißt …',['Kraft','Last','Drehachse'],1],
+   ['Da, wo du drückst oder ziehst, wirkt die …',['Last','Drehachse','Kraft'],2]];
+  const p=rnd(P);return mcq(p[0],p[1],p[2],'Richtig ist: '+p[1][p[2]]+'.')},
+ hebelarten(){
+  const r=Math.random();
+  if(r<0.6){const name=rnd(Object.keys(SVG.sk)),typ=SVG.sk[name].typ;
+    const art=['Flaschenöffner','Nussknacker','Unterarm'].includes(name)?'der':'die';
+    return mcq(`Ist ${art} ${name} ein einseitiger oder ein zweiseitiger Hebel?`,['einseitig','zweiseitig'],typ==='einseitig'?0:1,
+      typ==='einseitig'?'Einseitig: Die Drehachse liegt am Ende. Kraft und Last sind auf derselben Seite.':'Zweiseitig: Die Drehachse liegt zwischen Kraft und Last.',`<div class="fig">${SVG.sk[name].svg}</div>`)}
+  if(r<0.85){const T=[['eine Balkenwaage',1,'Die Drehachse liegt in der Mitte zwischen den beiden Schalen.'],['eine Kneifzange',1,'Das Gelenk liegt zwischen Griffen und Schneiden.'],['eine Knoblauchpresse',0,'Das Gelenk liegt am Ende. Knoblauch und Hand sind auf derselben Seite.'],['ein Tacker (Hefter)',0,'Das Gelenk liegt hinten am Ende. Du drückst vorne, die Klammer ist auch vorne.'],['eine Angelrute',0,'Die Drehachse ist die Hand am Ende. Kraft und Last sind auf derselben Seite.']];
+    const t=rnd(T);return mcq(`Ist ${t[0]} ein einseitiger oder ein zweiseitiger Hebel?`,['einseitig','zweiseitig'],t[1],t[2])}
+  const P=[['Bei einem einseitigen Hebel liegt die Drehachse …',['am Ende','zwischen Kraft und Last','genau unter der Last'],0],
+   ['Bei einem zweiseitigen Hebel liegen Kraft und Last …',['auf verschiedenen Seiten der Drehachse','auf derselben Seite','direkt auf der Drehachse'],0],
+   ['Welcher Hebel ist zweiseitig?',['Schubkarre','Nussknacker','Wippe'],2],
+   ['Welcher Hebel ist einseitig?',['Schere','Schubkarre','Zange'],1]];
+  const p=rnd(P);return mcq(p[0],p[1],p[2],'Richtig ist: '+p[1][p[2]]+'.')},
+ gleichgewicht(){
+  const GW=[0.1,0.2,0.3,0.4,0.5,0.6,0.8,1.0],H=[2,4,6,8,10,12,14,16,18,20],grams=Math.random()<0.3;
+  const W=w=>grams?Math.round(w*100)+' g':fmt(w,1)+' N';
+  const kind=Math.random()<0.6?'decide':(Math.random()<0.5?'pos':'weight');let lw,la,rw,ra;
+  for(let k=0;k<500;k++){lw=rnd(GW);la=rnd(H);
+    if(kind==='pos'){rw=rnd(GW);ra=lw*la/rw;if(Math.abs(ra-Math.round(ra))<1e-9&&H.includes(Math.round(ra))){ra=Math.round(ra);break}}
+    else if(kind==='weight'){ra=rnd(H);rw=lw*la/ra;if(GW.some(g=>Math.abs(g-rw)<1e-9))break}
+    else{rw=rnd(GW);if(Math.random()<0.35){ra=lw*la/rw;if(Math.abs(ra-Math.round(ra))<1e-9&&H.includes(Math.round(ra))){ra=Math.round(ra);break}}else{ra=rnd(H);if(Math.abs(lw*la-rw*ra)>1e-9)break}}}
+  const ML=lw*la,MR=rw*ra,conv=grams?`Umrechnen: ${W(lw)} ≙ ${fmt(lw,1)} N, ${W(rw)} ≙ ${fmt(rw,1)} N\n`:'';
+  if(kind==='decide'){const d=MR-ML,truth=Math.abs(d)<1e-9?0:(d<0?1:2);
+    const t=mcq(`Links: ${W(lw)} bei ${la} cm. Rechts: ${W(rw)} bei ${ra} cm. Was passiert, wenn man loslässt?`,['Gleichgewicht','links sinkt','rechts sinkt'],truth,
+      conv+`Links:  ${fmt(lw,1)} N · ${la} cm = ${fmt(ML)} N·cm\nRechts: ${fmt(rw,1)} N · ${ra} cm = ${fmt(MR)} N·cm\n→ `+(truth===0?'gleich: Gleichgewicht':truth===1?'links größer: links sinkt':'rechts größer: rechts sinkt'),
+      `<div class="fig">${levSVG(lw,la,rw,ra,0,true,{grams})}</div>`);
+    t.after=`<div class="fig">${levSVG(lw,la,rw,ra,truth===0?0:Math.max(-12,Math.min(12,d*6)),false,{grams})}</div>`;return t}
+  if(kind==='pos')return num(`Links hängen ${W(lw)} bei ${la} cm. Rechts willst du ${W(rw)} aufhängen. In welches Loch muss es, damit Gleichgewicht herrscht?`,[{label:'Abstand rechts',unit:'cm',ans:ra,tol:0.01}],
+      conv+`Links: ${fmt(lw,1)} N · ${la} cm = ${fmt(ML)} N·cm\nRechts: ${fmt(rw,1)} N · a = ${fmt(ML)} N·cm\na = ${fmt(ML)} N·cm : ${fmt(rw,1)} N = ${ra} cm`,`<div class="fig">${levSVG(lw,la,rw,0,0,true,{grams,rwOnly:true})}</div>`);
+  return num(`Links hängen ${W(lw)} bei ${la} cm. Rechts hängt ein Gewicht bei ${ra} cm. Wie schwer muss es sein (in N), damit Gleichgewicht herrscht?`,[{label:'Gewicht rechts',unit:'N',ans:rw,tol:0.011}],
+      conv+`Links: ${fmt(lw,1)} N · ${la} cm = ${fmt(ML)} N·cm\nRechts: F · ${ra} cm = ${fmt(ML)} N·cm\nF = ${fmt(ML)} N·cm : ${ra} cm = ${fmt(rw)} N`,`<div class="fig">${levSVG(lw,la,null,ra,0,true,{grams})}</div>`)},
+ hebelrechnen(){
+  const r=Math.random();
+  if(r<0.4){let F2,a1,a2,F1;do{F2=rnd([120,150,200,240,300,360,400,450,480,600,800]);a1=rnd([40,50,60,80,90,100,120]);a2=rnd([10,15,20,25,30]);F1=F2*a2/a1}while(Math.abs(F1*10-Math.round(F1*10))>1e-9||a2>=a1);
+    return num(`Brechstange: Der Kraftarm ist ${a1} cm lang, der Lastarm ${a2} cm. Der Stein wiegt ${F2} N. Wie groß muss die Kraft sein?`,[{label:'Kraft',unit:'N',ans:F1,tol:0.06}],
+      `Gegeben: a₁ = ${a1} cm, a₂ = ${a2} cm, F₂ = ${F2} N · Gesucht: F₁\nF₁ · ${a1} cm = ${F2} N · ${a2} cm\nF₁ = ${F2*a2} N·cm : ${a1} cm = ${fmt(F1,1)} N\nAntwort: Man braucht eine Kraft von ${fmt(F1,1)} N.`)}
+  if(r<0.75){let F1,a1,F2,a2;do{F1=rnd([150,200,250,300,350,400,450]);a1=rnd([1,1.5,2,2.5,3]);F2=rnd([200,250,300,400,450,500,600]);a2=F1*a1/F2}while(Math.abs(a2*100-Math.round(a2*100))>1e-9||F2<=F1);
+    return num(`Wippe: Ein Kind (${F1} N) sitzt ${fmt(a1,1)} m von der Drehachse entfernt. Ein zweites Kind (${F2} N) setzt sich auf die andere Seite. Wie weit von der Drehachse muss es sitzen?`,[{label:'Abstand',unit:'m',ans:a2,tol:0.011}],
+      `Gegeben: F₁ = ${F1} N, a₁ = ${fmt(a1,1)} m, F₂ = ${F2} N · Gesucht: a₂\n${F1} N · ${fmt(a1,1)} m = ${F2} N · a₂\na₂ = ${fmt(F1*a1)} N·m : ${F2} N = ${fmt(a2)} m\nAntwort: Das Kind muss ${fmt(a2)} m von der Drehachse entfernt sitzen.`)}
+  let F1,a1,a2,F2;do{F1=rnd([20,25,30,40,50,60,80,100]);a1=rnd([30,40,50,60,80,100,120]);a2=rnd([5,10,15,20]);F2=F1*a1/a2}while(Math.abs(F2-Math.round(F2))>1e-9||a2>=a1);
+  return num(`Schubkarre: Du hebst die Griffe mit ${F1} N an. Der Kraftarm ist ${a1} cm lang, der Lastarm ${a2} cm. Wie schwer darf die Ladung höchstens sein?`,[{label:'Last',unit:'N',ans:F2,tol:0.06}],
+    `Gegeben: F₁ = ${F1} N, a₁ = ${a1} cm, a₂ = ${a2} cm · Gesucht: F₂\n${F1} N · ${a1} cm = F₂ · ${a2} cm\nF₂ = ${F1*a1} N·cm : ${a2} cm = ${F2} N\nAntwort: Die Ladung darf ${F2} N schwer sein.`)},
+ goldene(){
+  const r=Math.random();
+  if(r<0.35){const n=rnd([2,3,4,5,6]),h=rnd([2,3,4,5,10]);
+    return num(`Der Kraftarm ist ${n}-mal so lang wie der Lastarm. Die Last soll ${h} cm steigen. Wie weit musst du drücken?`,[{label:'Kraftweg',unit:'cm',ans:n*h,tol:0.01}],`Kraftarm ${n}-mal so lang → Kraftweg ${n}-mal so lang\n${n} · ${h} cm = ${n*h} cm`)}
+  if(r<0.65){const F=rnd([50,100,150,200]),n=rnd([2,3,4,5]),L=F*n,h=rnd([2,4,5,10,20]);
+    return num(`Mit einem Hebel hebst du eine Last von ${L} N mit einer Kraft von nur ${F} N. Die Last steigt ${h} cm. Wie weit musst du drücken?`,[{label:'Kraftweg',unit:'cm',ans:n*h,tol:0.01}],`Die Kraft ist nur ${n===2?'die Hälfte':n===3?'ein Drittel':n===4?'ein Viertel':'ein Fünftel'} der Last (${L} N : ${F} N = ${n}).\nDann ist der Kraftweg ${n}-mal so lang: ${n} · ${h} cm = ${n*h} cm\nProbe: ${F} N · ${n*h} cm = ${L} N · ${h} cm = ${F*n*h} N·cm`)}
+  const P=[['Mit einem Hebel spart man Kraft und Weg gleichzeitig.',1,'Man spart Kraft, aber der Weg wird länger.'],
+   ['Wer weniger Kraft braucht, muss einen längeren Weg machen.',0,'Genau das sagt die Goldene Regel.'],
+   ['Sind Kraftarm und Lastarm gleich lang, spart man keine Kraft.',0,'Kraft = Last und Kraftweg = Lastweg.'],
+   ['Die Goldene Regel gilt nur für Hebel, nicht für Rollen.',1,'Sie gilt für alle Kraftwandler, auch für Rollen.'],
+   ['Ist der Kraftarm doppelt so lang wie der Lastarm, muss man doppelt so weit drücken, wie die Last steigt.',0,'Die Wege verhalten sich wie die Hebelarme.'],
+   ['Kraft · Kraftweg ist gleich Last · Lastweg.',0,'Das ist die Goldene Regel als Formel.'],
+   ['Mit einem langen Hebel bekommt man Kraft geschenkt.',1,'Nichts ist geschenkt: Man bezahlt mit Weg.']];
+  const p=rnd(P);return {type:'mcq',q:'Richtig oder falsch? „'+p[0]+'“',opts:['richtig','falsch'],ans:p[1],steps:p[2]}},
+ rollen(){
+  const r=Math.random();
+  if(r<0.3){const L=rnd([100,120,160,200,240,300,360,400,500]),R=rnd([10,20,40]),h=rnd([1,2,3,4,5]);const F=(L+R)/2;
+    return num(`Ein Eimer (${L} N) hängt an einer losen Rolle (${R} N). Er soll ${h} m nach oben. Wie groß ist die Zugkraft? Wie viel Seil musst du ziehen?`,[{label:'Zugkraft',unit:'N',ans:F,tol:0.06},{label:'Seil',unit:'m',ans:2*h,tol:0.01}],
+      `Zugkraft = (Last + Rolle) : 2 = (${L} N + ${R} N) : 2 = ${fmt(F,1)} N\nSeil = 2 · ${h} m = ${2*h} m`,`<div class="fig"><svg viewBox="0 0 240 260" role="img" aria-label="lose Rolle">${rolleSVG('lose')}</svg></div>`)}
+  if(r<0.5){const L=rnd([20,50,80,100,150,200]),h=rnd([1,2,3,5,8]);
+    return num(`An einer festen Rolle hängt eine Last von ${L} N. Sie soll ${h} m nach oben. Wie groß ist die Zugkraft? Wie viel Seil musst du ziehen?`,[{label:'Zugkraft',unit:'N',ans:L,tol:0.06},{label:'Seil',unit:'m',ans:h,tol:0.01}],
+      `Feste Rolle: Zugkraft = Last = ${L} N\nSeil = Lastweg = ${h} m\nDie feste Rolle ändert nur die Richtung.`,`<div class="fig"><svg viewBox="0 0 240 260" role="img" aria-label="feste Rolle">${rolleSVG('fest')}</svg></div>`)}
+  if(r<0.65){const t=rnd(['fest','lose']);return mcq('Welche Rolle siehst du?',['feste Rolle','lose Rolle'],t==='fest'?0:1,t==='fest'?'Die Rolle ist oben befestigt und bewegt sich nicht mit.':'Die Rolle hängt im Seil und bewegt sich mit der Last nach oben.',`<div class="fig" style="max-width:280px"><svg viewBox="0 0 240 260" role="img" aria-label="Rolle">${rolleSVG(t)}</svg></div>`)}
+  const P=[['Welche Rolle ändert nur die Richtung der Kraft?',['feste Rolle','lose Rolle'],0,'Die feste Rolle spart keine Kraft, sie lenkt nur um.'],
+   ['Bei welcher Rolle bewegt sich die Rolle mit der Last?',['feste Rolle','lose Rolle'],1,'Die lose Rolle hängt im Seil.'],
+   ['Warum braucht man bei der losen Rolle nur die halbe Kraft?',['Die Last hängt an zwei Seilstücken.','Die Rolle ist sehr leicht.','Das Seil ist dünner.'],0,'Jedes der zwei Seilstücke trägt die Hälfte.'],
+   ['Mit einer losen Rolle soll die Last 1 m steigen. Wie viel Seil ziehst du?',['0,5 m','1 m','2 m'],2,'Kraftweg = 2 · Lastweg.'],
+   ['Feste Rolle, Last 50 N. Wie groß ist die Zugkraft?',['25 N','50 N','100 N'],1,'Bei der festen Rolle ist die Zugkraft gleich der Last.'],
+   ['Lose Rolle, Last 60 N, Rolle 0 N. Zugkraft?',['30 N','60 N','120 N'],0,'60 N : 2 = 30 N.'],
+   ['Wozu nutzt man eine feste Rolle am Fahnenmast?',['Um Kraft zu sparen','Um von unten nach unten ziehen zu können','Um den Weg zu verkürzen'],1,'Sie ändert die Richtung der Kraft.']];
+  const p=rnd(P);return mcq(p[0],p[1],p[2],p[3])}
+};
+const SKILLS=[['begriffe','Teile eines Hebels','station-1'],['hebelarten','Einseitig oder zweiseitig','station-2'],['gleichgewicht','Gleichgewicht prüfen','station-3'],['hebelrechnen','Mit dem Hebelgesetz rechnen','station-3'],['goldene','Goldene Regel','station-4'],['rollen','Feste und lose Rolle','station-5']];
+
+/* ---------- Fortschritt ---------- */
+let PROG=store.get('kw-prog',{});
+const pr=k=>PROG[k]||(PROG[k]={streak:0,right:0,total:0,done:false});
+function record(k,ok){const p=pr(k);p.total++;if(ok){p.right++;p.streak++;if(p.streak>=NEED)p.done=true}else p.streak=0;store.set('kw-prog',PROG);drawProg()}
+function dots(n){let s='<span class="dots" aria-hidden="true">';for(let i=0;i<NEED;i++)s+=`<span class="dot${i<n?' on':''}"></span>`;return s+'</span>'}
+function meterHTML(k){const p=pr(k);return `<div class="meter${p.done?' done':''}">${dots(Math.min(p.streak,NEED))}<span>${p.done?'<b>Thema sicher!</b> Du kannst weiterüben.':`<b>${Math.min(p.streak,NEED)} von ${NEED}</b> richtig hintereinander`}</span><span class="stat">· insgesamt ${p.right} von ${p.total} richtig</span></div>`}
+function drawProg(){$('prog').innerHTML=SKILLS.map(([k,n,v])=>{const p=pr(k);return `<li><span><b>${n}</b> <span class="stat">(${p.right} von ${p.total})</span></span>${p.done?'<span class="badge">sicher</span>':dots(Math.min(p.streak,NEED))}<a href="#${v}">Üben</a></li>`}).join('');
+  const n=SKILLS.filter(([k])=>pr(k).done).length;$('progmsg').className='msg'+(n===SKILLS.length?' ok':'');
+  $('progmsg').textContent=`${n} von ${SKILLS.length} Themen sicher.`+(n===SKILLS.length?' Super! Mach jetzt noch den Probetest.':'');
+  document.querySelectorAll('[data-meter]').forEach(el=>el.innerHTML=meterHTML(el.dataset.meter))}
+
+/* ---------- Übungs-Widget ---------- */
+function renderTask(box,t,onDone){
+  let h=`<div class="pq">${t.fig||''}<div class="q">${t.q}</div>`;
+  if(t.type==='mcq')h+=`<div class="opts">${t.opts.map((o,i)=>`<button class="b" data-i="${i}">${o}</button>`).join('')}</div>`;
+  else h+=`<div class="row">${t.fields.map((f,i)=>`<label for="${box.id}-f${i}">${f.label}:</label><input type="text" inputmode="decimal" id="${box.id}-f${i}"><span class="num">${f.unit}</span>`).join('')}<button class="b pri" data-check>Prüfen</button></div>`;
+  h+=`<p class="msg" aria-live="polite"></p><div class="steps" hidden></div><div class="row"><button class="b pri" data-next hidden>Nächste Aufgabe</button></div></div>`;
+  box.innerHTML=h;
+  const msg=box.querySelector('.msg'),steps=box.querySelector('.steps'),next=box.querySelector('[data-next]');
+  const finish=ok=>{msg.className='msg '+(ok?'ok':'bad');msg.textContent=ok?rnd(['Richtig!','Super, stimmt!','Genau!']):'Leider falsch. Lies den Lösungsweg und probiere die nächste Aufgabe.';
+    steps.textContent=t.steps;steps.hidden=false;if(t.after){const f=box.querySelector('.fig');if(f)f.outerHTML=t.after}
+    next.hidden=false;next.focus();onDone(ok)};
+  if(t.type==='mcq')box.querySelectorAll('.opts .b').forEach(b=>b.onclick=()=>{const ok=+b.dataset.i===t.ans;
+    box.querySelectorAll('.opts .b').forEach(x=>{x.disabled=true;if(+x.dataset.i===t.ans)x.className='b ok'});if(!ok)b.className='b bad';finish(ok)});
+  else{const ins=t.fields.map((f,i)=>$(`${box.id}-f${i}`));ins.forEach(el=>el.oninput=()=>{el.className='';msg.textContent=''});
+    box.querySelector('[data-check]').onclick=e=>{const vals=ins.map(el=>parse(el.value));
+      if(vals.some(isNaN)){msg.className='msg bad';msg.textContent='Fülle alle Felder mit einer Zahl aus.';ins.forEach((el,i)=>{if(isNaN(vals[i]))el.className='bad'});return}
+      let ok=true;vals.forEach((v,i)=>{const f=t.fields[i],good=Math.abs(v-f.ans)<=f.tol;ins[i].className=good?'ok':'bad';ins[i].disabled=true;if(!good)ok=false});
+      e.target.disabled=true;finish(ok)};
+    ins.forEach(el=>el.onkeydown=ev=>{if(ev.key==='Enter')box.querySelector('[data-check]').click()})}
+  return next}
+function practice(k){const host=$('p-'+k);host.innerHTML=`<div data-meter="${k}"></div><div id="box-${k}"></div>`;
+  const run=()=>{const next=renderTask($('box-'+k),GEN[k](),ok=>record(k,ok));next.onclick=run};run();drawProg()}
+
+/* ---------- Probetest ---------- */
+function probe(){const list=shuffle(SKILLS.flatMap(([k])=>[k,k]));let i=0;const res={};
+  const step=()=>{if(i>=list.length){const right=Object.values(res).reduce((a,r)=>a+r.r,0);const weak=SKILLS.filter(([k])=>res[k]&&res[k].r<res[k].n);
+      $('probe').innerHTML=`<p class="score">${right} von ${list.length} richtig</p>`+(weak.length?`<p>Übe noch: ${weak.map(([k,n,v])=>`<a href="#${v}" style="color:var(--last);font-weight:800">${n}</a>`).join(' · ')}</p>`:'<p class="msg ok">Klasse! Du bist gut vorbereitet.</p>')+`<div class="row"><button class="b pri" id="pagain">Neuer Probetest</button></div>`;
+      $('pagain').onclick=probe;return}
+    const k=list[i];$('probe').innerHTML=`<p class="stat">Aufgabe ${i+1} von ${list.length} · ${SKILLS.find(s=>s[0]===k)[1]}</p><div id="box-probe"></div>`;
+    const next=renderTask($('box-probe'),GEN[k](),ok=>{res[k]=res[k]||{r:0,n:0};res[k].n++;if(ok)res[k].r++});next.textContent=i+1<list.length?'Nächste Aufgabe':'Ergebnis anzeigen';next.onclick=()=>{i++;step()}};
+  step()}
+
+/* ---------- Hebel-Labor, Goldene Regel, Rollen-Bild ---------- */
+const WS=[0.1,0.2,0.3,0.5,0.6,0.7,0.8,1.1];
+['lw','rw'].forEach((id,j)=>{$(id).innerHTML=WS.map(w=>`<option value="${w}" ${w===(j?0.2:0.6)?'selected':''}>${fmt(w,1)} N (${Math.round(w*100)} g)</option>`).join('');$(id).onchange=lever});
+['la','ra'].forEach(id=>$(id).oninput=lever);
+function lever(){const lw=+$('lw').value,rw=+$('rw').value,la=+$('la').value,ra=+$('ra').value;$('lav').textContent=la+' cm';$('rav').textContent=ra+' cm';
+  const ML=lw*la,MR=rw*ra,d=MR-ML,eq=Math.abs(d)<1e-9,ang=eq?0:Math.max(-12,Math.min(12,d*6));
+  $('lever').outerHTML=levSVG(lw,la,rw,ra,ang,false).replace('<svg ','<svg id="lever" ');
+  $('leverTxt').textContent=`Links:  ${fmt(lw,1)} N · ${la} cm = ${fmt(ML)} N·cm\nRechts: ${fmt(rw,1)} N · ${ra} cm = ${fmt(MR)} N·cm\n`+(eq?'Beide Produkte sind gleich: Gleichgewicht!':(ML>MR?'Links ist das Produkt größer: Die linke Seite sinkt.':'Rechts ist das Produkt größer: Die rechte Seite sinkt.'));
+  $('leverTxt').style.borderLeft=eq?'6px solid var(--ok)':'6px solid var(--bad)'}
+function gr(){const n=+$('gr').value;$('grv').textContent=n;$('grTxt').textContent=`Last 600 N, Lastweg 2 cm\nKraft    = 600 N : ${n} = ${fmt(600/n,1)} N\nKraftweg = ${n} · 2 cm = ${2*n} cm\nProbe: ${fmt(600/n,1)} N · ${2*n} cm = 1200 N·cm = 600 N · 2 cm`}
+$('gr').oninput=gr;
+$('rollen').innerHTML=`<rect width="520" height="260" fill="#fff"/><g>${rolleSVG('fest',true)}</g><g transform="translate(260,0)">${rolleSVG('lose',true)}</g>`;
+$('s1sol').innerHTML=SVG.wippeSol;
+
+/* ---------- Router ---------- */
+const VIEWS=['start','station-1','station-2','station-3','station-4','station-5','probe'];
+function route(){const v=VIEWS.includes(location.hash.slice(1))?location.hash.slice(1):'start';
+  document.querySelectorAll('[data-view]').forEach(s=>s.hidden=s.dataset.view!==v);
+  document.querySelectorAll('#nav a').forEach(a=>a.setAttribute('aria-current',a.getAttribute('href')==='#'+v?'page':'false'));
+  window.scrollTo(0,0)}
+addEventListener('hashchange',route);
+let resetArm=false;
+$('resetAll').onclick=()=>{if(!resetArm){resetArm=true;$('resetHint').textContent='Noch einmal klicken zum Löschen.';$('resetAll').textContent='Wirklich löschen?';return}
+  PROG={};store.set('kw-prog',PROG);resetArm=false;$('resetHint').textContent='Gelöscht.';$('resetAll').textContent='Fortschritt löschen';drawProg()};
+
+SKILLS.forEach(([k])=>{if(!PROG[k])pr(k)});
+['begriffe','hebelarten','gleichgewicht','hebelrechnen','goldene','rollen'].forEach(practice);
+lever();gr();probe();drawProg();route();
+</script>
+
+</body></html>
